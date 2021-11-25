@@ -1,10 +1,19 @@
 "use strict"
 
 $(document).ready(() => {
+    
+    $("#passwordInput").focus();
 
-    $("button").click( (event) => {
+    $("submit").click( (event) => {
         $("#passwordInput").passwordStrengthChecker();
         event.preventDefault();
     })
+
+    $("#clear").click( () => {
+        $("#passwordInput").val( "" );
+    });
+
+    
+      
     
 })
