@@ -1,17 +1,29 @@
 (function($) {
     $.fn.passwordStrengthChecker = function() {
-        
+        $("#passwordInput").focus()
+
+
         return this.each(function() {
             showHidePassword();
             verify();
-
+            clear();
+           
+            
+            
+            
             function verify() {
-                $("#submit").click( (evt) => {
+                $("#verify").click( (evt) => {
                     evt.preventDefault();
                     passwordInput();
-                    strengthCheck();
+                    strengthVerification();
                 });
             };
+            
+            function clear() {
+                $("#clear").click( () => {
+                    $("#passwordInput").val( "" );
+                });
+            }
             
             function showHidePassword() {
                 $("#showPassword").click( () => {
@@ -31,6 +43,17 @@
                 });
             };
 
+            function checked() {
+                $("#images").click( () => {
+                    if($("#images").prop("checked") == true){
+                        alert("true")
+                       
+                    }else if($("#images").prop("checked") == false){
+                        strengthCheck();
+                    }
+                })
+            }
+
             function passwordInput(){
                 let password = $("#passwordInput").val();
                 if(password == ""){
@@ -42,13 +65,10 @@
                 }
             };
 
-            function strengthCheck(password){
+            function strengthVerification(){
                 let strength = 0;
-                if(password.length <6){
-                    $("#progress").addClass("w-25").addClass("bg-danger");
-                    $("#strength").addClass("short");
-                    return "I'm sorry but your password is too short. It's almost like you want to get hacked...";
-                }
+                let password = $("#passwordInput").val();
+               
                 if(password.match(/(.*[A-Za-z])/)){
                     strength += 1;
                 }
@@ -67,10 +87,19 @@
                 if(password.length > 10){
                     strength += 1;
                 }
+                checked();
+            };
+
+            function strengthCheck(){
+                if(password.length <6){
+                    $("#progress").addClass("w-25").addClass("bg-danger");
+                    $("#strength").addClass("short");
+                    return "I'm sorry but your password is too short. It's almost like you want to get hacked...";
+                }
                 if(strength < 3){
                     $("#progress").removeClass().addClass("progress-bar").addClass("w-50").addClass("bg-warning");
                     $("#strength").addClass("weak");
-                    return "Your password is weak. You should probably rethink it!";
+                    return "Do you work for the NL Health System? Because your password is WEAK!";
                 }else if(strength == 3 || strength == 4){
                     $("#progress").removeClass().addClass("progress-bar").addClass("w-75").addClass("bg-primary");
                     $("#strength").addClass("good");
@@ -79,8 +108,46 @@
                     $("#progress").removeClass().addClass("progress-bar").addClass("w-100").addClass("bg-success");
                     $("#strength").addClass("strong");
                     return "Your password is strong. You should be proud!";
-                };
+                }
             };
+            
+            function strengthCheckImages(){
+                if(password.length <6){
+                    $("#progress").addClass("w-25").addClass("bg-danger");
+                    $("#strength").addClass("short");
+                    
+                }
+                if(strength < 3){
+                    $("#progress").removeClass().addClass("progress-bar").addClass("w-50").addClass("bg-warning");
+                    $("#strength").addClass("weak");
+                    
+                }else if(strength == 3 || strength == 4){
+                    $("#progress").removeClass().addClass("progress-bar").addClass("w-75").addClass("bg-primary");
+                    $("#strength").addClass("good");
+                    
+                }else{
+                    $("#progress").removeClass().addClass("progress-bar").addClass("w-100").addClass("bg-success");
+                    $("#strength").addClass("strong");
+                    
+                }
+            };
+            
+
+            function setModalOverlay(){
+                let modalOverlay = $("<div></div>");
+                modalOverlay.css({
+                    "background" : "black, 0.5",
+                    "position" : "absolute",
+                    "top" : "0px",
+                    "left" : "0px",
+                    "display" : "none",
+                    "text-align" : "center",
+                    "width" : "50%",
+                    "height" : "50%",
+                    "padding-top" : "5%"
+                });
+                $("form").append(modalOverlay);
+            }
         });                 
     };    
 }(jQuery));
