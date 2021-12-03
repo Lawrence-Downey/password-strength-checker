@@ -34,8 +34,13 @@
             };
             
             function clear() {
-                $("#clear").click( () => {
-                    $("#passwordInput").val( "" );
+                $("#clear").click( (evt) => {
+                    evt.preventDefault();
+                    $("#passwordInput").val("");
+                    $("#passwordInput").focus();
+                    $("#strength").html("");
+                    $("#progress").removeClass();
+                    $("#images").prop("checked",false)
                 });
             }
             
@@ -46,10 +51,10 @@
                     if(password.val() != ''){
                         if(passwordType == "password"){  
                             password.attr("type", "text");  
-                            $(this).text("Hide Password");  
+                            $("#showPassword").text("Hide Password");  
                         }else{  
                             password.attr("type", "password");  
-                            $(this).text("Show Password");  
+                            $("#showPassword").text("Show Password");  
                         };
                     }else{
                         alert("Please Enter Password");
@@ -62,10 +67,21 @@
                 let strength = 0;   
                 if(password == ""){
                     $("#strength").html("");
-                }
-                else{
-                    let meter = strengthVerification(password,strength);
-                    $("#strength").html(meter);
+                    
+                }else if(password.length <6){
+                    $("#strength").html("");
+                    $("#progress").removeClass().addClass("progress-bar").addClass("w-25").addClass("bg-danger");
+                    $("#strength").addClass("short");
+                    $("#strength").html("I'm sorry but your password is too short. It's almost like you want to get hacked...");
+                }else if($("#images").prop("checked") == true){
+                    if(password.length <6){
+                        $("#strength").addClass("short");
+                        $("#strength").html("");
+                        modalOverlay.css({opacity:0.1}).show().animate({opacity:1});
+                    }
+                }else{
+                    strengthVerification(password,strength);
+                    
                 }
             };
 
@@ -89,50 +105,45 @@
                     strength += 1;
                 }
                                 
-                if($("#images").prop("checked") == true){
-                    strengthCheckImages(password, strength);   
-                }else if($("#images").prop("checked") == false){
-                    strengthCheck(password,strength);
+                  
+                if($("#images").prop("checked") == false){
+                    strengthCheck(strength);
+                }else if($("#images").prop("checked") == true){
+                    strengthCheckImages(strength);
                 }
             };
 
-            function strengthCheck(password, strength){
-                if(password.length <6){
-                    $("#progress").addClass("w-25").addClass("bg-danger");
-                    $("#strength").addClass("short");
-                    return "I'm sorry but your password is too short. It's almost like you want to get hacked...";
-                }if(strength < 3){
+            function strengthCheck(strength){
+                if(strength < 3){
                     $("#progress").removeClass().addClass("progress-bar").addClass("w-50").addClass("bg-warning");
                     $("#strength").addClass("weak");
-                    return "Do you work for the NL Health System? Because your password is WEAK!";
+                    $("#strength").html("Do you work for the NL Health System? Because your password is WEAK!");
                 }else if(strength == 3 || strength == 4){
                     $("#progress").removeClass().addClass("progress-bar").addClass("w-75").addClass("bg-primary");
                     $("#strength").addClass("good");
-                    return "Your password is good. But there is still room for improvement!";
+                    $("#strength").html("Your password is good. But there is still room for improvement!");
                 }else{
                     $("#progress").removeClass().addClass("progress-bar").addClass("w-100").addClass("bg-success");
                     $("#strength").addClass("strong");
-                    return "Your password is strong. You should be proud!";
+                    $("#strength").html("Your password is strong. You should be proud!");
                 }
             };
             
-            function strengthCheckImages(password, strength){
-                if(password.length <6){
-                    $("#strength").addClass("short");
-                    modalOverlay.css({opacity:0.1}).show().animate({opacity:1});
-                    
-                }if(strength < 3){
+            function strengthCheckImages(strength){
+                if(strength < 3){
                     $("#strength").addClass("weak");
+                    $("#strength").html("");
                     modalOverlay.css({opacity:0.1}).show().animate({opacity:1});
                     
                 }else if(strength == 3 || strength == 4){
                     $("#strength").addClass("good");
+                    $("#strength").html("");
                     modalOverlay.css({opacity:0.1}).show().animate({opacity:1});
                     
                 }else{
                     $("#strength").addClass("strong");
+                    $("#strength").html("");
                     modalOverlay.css({opacity:0.1}).show().animate({opacity:1});
-                    
                 }
             };
             
@@ -150,19 +161,19 @@
                     "padding-top" : "12%",
                     "padding-right": "10%"
                 });
-                if($("#strength").attr("class", "short")){
+                if($("#strength").hasClass("short")){
                     strengthImage = $('<img src="images/TooShort.png">');
                     imageProperties(strengthImage);
                     modalOverlay.append(strengthImage);
-                }else if($("#strength").attr("class", "weak")){
-                    strengthImage = $('<img src="images/Weak.jpg>"');
+                }else if($("#strength").hasClass("weak")){
+                    //strengthImage = $('<img src="images/Weak.jpg>"');
                     imageProperties(strengthImage);
                     modalOverlay.append(strengthImage);
-                }else if($("#strength").attr("class", "good")){
+                }else if($("#strength").hasClass("good")){
                     strengthImage = $('<img src="images/Good.png">');
                     imageProperties(strengthImage);
                     modalOverlay.append(strengthImage);
-                }else if($("#strength").attr("class", "strong")){
+                }else if($("#strength").hasClass("strong")){
                     strengthImage = $('<img src="images/Strong.jpg">');
                     imageProperties(strengthImage);
                     modalOverlay.append(strengthImage);
@@ -192,13 +203,11 @@
                     "border": "0px",
                     "z-index": "1"
                 }
-                
                 closeButton = $("<span>X</span>");
                 closeButton.css(symbol);
                 modalOverlay.append(closeButton);
-
                 closeButton.click(function() {
-                    modalOverlay.hide();
+                    modalOverlay.hide().animate({opacity:0.1});
                     });
               };
         });                 
