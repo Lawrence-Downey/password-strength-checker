@@ -9,24 +9,17 @@
                 width: "40px",
                 height: "40px"
             },
-            imageBorder: "5px solid white",
-            borderRadius: "5px",
-            imageWidth: "500px",
-            imageHeight: "400px"
         }, options)
 
         return this.each(function() {
             let modalOverlay;
-            let strengthImage;
             let closeButton;
             setModalOverlayProperties();
-            showHidePassword();
+            closeButtonProperties();
+            showHidePassword();           
             verify();
             clear();
-            closeButtonProperties();
             
-            
-
             function verify() {
                 $("#verify").click( (evt) => {
                     evt.preventDefault();
@@ -42,8 +35,10 @@
                     $("#strength").html("");
                     $("#progress").removeClass();
                     $("#images").prop("checked",false)
+                    closeButtonProperties();
+
                 });
-            }
+            };
             
             function showHidePassword() {
                 $("#showPassword").click( () => {
@@ -65,23 +60,19 @@
 
             function verification(){
                 let password = $("#passwordInput").val();
-                let strength = 0;   
+                let strength = 0;
+                $("#strength").removeClass();  
+                $("#progress").removeClass().addClass("progress-bar");   
                 if(password == ""){
                     $("#strength").html("");  
                 }else if(password.length <6){
-                    if($("#images").prop("checked") == true){
-                        $("#strength").addClass("short");
-                        $("#strength").html("");
-                        modalOverlay.css({opacity:0.1}).show().animate({opacity:1});
-                        console.log("I hope this works");
-                    }else{
-                        $("#strength").html("");
-                        $("#progress").removeClass().addClass("progress-bar").addClass("w-25").addClass("bg-danger");
-                        $("#strength").addClass("short");
-                        $("#strength").html("I'm sorry but your password is too short. It's almost like you want to get hacked...");
-                    }    
+                    $("#strength").html("");
+                    $("#progress").removeClass().addClass("progress-bar").addClass("w-25").addClass("bg-danger");
+                    $("#strength").addClass("short");
+                    $("#strength").html("I'm sorry but your password is too short. It's almost like you want to get hacked..."); 
+                    
+                    checkForImageRequest(); 
                 }else{
-                    console.log("Other verification");
                     strengthVerification(password,strength);   
                 }
             };
@@ -106,12 +97,7 @@
                     strength += 1;
                 }
                                 
-                if($("#images").prop("checked") == false){
-                    strengthCheck(strength);
-                }else if($("#images").prop("checked") == true){
-                    console.log("Making our way to images")
-                    strengthCheckImages(strength);
-                }
+                strengthCheck(strength);
             };
 
             function strengthCheck(strength){
@@ -128,25 +114,29 @@
                     $("#strength").addClass("strong");
                     $("#strength").html("Your password is strong. You should be proud!");
                 }
+                checkForImageRequest();
             };
             
-            function strengthCheckImages(strength){
-                if(strength < 3){
-                    $("#strength").addClass("weak");
-                    $("#strength").html("");
-                    console.log("WEAK BRO")
-                    modalOverlay.css({opacity:0.1}).show().animate({opacity:1});
-                    
-                }else if(strength == 3 || strength == 4){
-                    $("#strength").addClass("good");
-                    $("#strength").html("");
-                    modalOverlay.css({opacity:0.1}).show().animate({opacity:1});
-                    
-                }else{
-                    $("#strength").addClass("strong");
-                    $("#strength").html("");
-                    modalOverlay.css({opacity:0.1}).show().animate({opacity:1});
+            function checkForImageRequest(){
+                if ($("#images").is(":checked")){
+                    setUpImage();
                 }
+            };
+
+            function setUpImage(){
+                let strengthImage = new Image();
+                strengthImage.src = null;
+                if($("#strength").hasClass("short")){
+                    strengthImage.src=`images/TooShort.png`;
+                }else if($("#strength").hasClass("weak")){
+                    strengthImage.src=`images/Weak.jpg`;
+                }else if($("#strength").hasClass("good")){
+                    strengthImage.src=`images/Good.png`;
+                }else if($("#strength").hasClass("strong")){
+                    strengthImage.src=`images/Strong.jpg`;
+                }
+                modalOverlay.css({opacity:0.1}).show().animate({opacity:1});
+                modalOverlay.append(`<img src=${strengthImage.src}>`);
             };
             
             function setModalOverlayProperties(){
@@ -160,34 +150,10 @@
                     "text-align" : "center",
                     "width" : "100%",
                     "height" : "100%",
-                    "padding-top" : "12%",
+                    "padding-top" : "13%",
                     "padding-right": "10%"
                 });
-                if($("#strength").hasClass("short")){
-                    strengthImage = $('<img src="TooShort.png">');
-                    modalOverlay.append(imageProperties(strengthImage));
-                }else if($("#strength").hasClass("weak")){
-                    console.log("Image Properties")
-                    strengthImage = $('<img src="Weak.jpg">');
-                    modalOverlay.append(imageProperties(strengthImage));
-                }else if($("#strength").hasClass("good")){
-                    strengthImage = $('<img src="Good.png">');
-                    modalOverlay.append(imageProperties(strengthImage));
-                }else if($("#strength").hasClass("strong")){
-                    strengthImage = $('<img src="Strong.jpg">');
-                    modalOverlay.append(imageProperties(strengthImage));
-                }    
                 $("body").append(modalOverlay);
-            };
-
-            function imageProperties(strengthImage){
-                console.log("IMAGE WORKS")
-                strengthImage.css({
-                    "border":settings.imageBorder,
-                    "border-radius":settings.borderRadius,
-                    "width":settings.imageWidth,
-                    "height":settings.imageHeight
-                })
             };
 
             function closeButtonProperties(){
@@ -207,7 +173,10 @@
                 closeButton.css(symbol);
                 modalOverlay.append(closeButton);
                 closeButton.click(function() {
-                    modalOverlay.hide().animate({opacity:0.1});
+                    modalOverlay.animate({opacity: 0.1}, function() {
+                        modalOverlay.html("");
+                        modalOverlay.hide();
+                    })
                 });
             };
         });                 
