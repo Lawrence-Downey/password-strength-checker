@@ -43,4 +43,10 @@ The very last button set up is the ![Clear Button](https://user-images.githubuse
 ## End Results:
 
 ![Strength Meter Example](https://user-images.githubusercontent.com/84094233/144720404-1b598b63-852b-468f-9421-f6060cd7575d.png)
+
 As you can see the password is too short as demonstrated by the strength meter.
+
+In this example you can see the use of the image overlay:
+
+![image](https://user-images.githubusercontent.com/84094233/144730060-e9e1a742-f4b6-4272-9906-03dce7ce2d8c.png)
+
